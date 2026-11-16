@@ -92,7 +92,11 @@
 
 ## Phase 7: اعتبارسنجی و مستندسازی نهایی
 
-- [X] **T053** [Polish] تمام تست‌های Backend، شش سناریوی Assignment، آزمون‌های SQLite contention و auth/session/CSRF را روی Windows/PowerShell واقعاً اجرا کن؛ Build، Test و Validation را جداگانه با فرمان/خروجی/محدودیت ثبت کن؛ بعد از تغییر اسناد، traceability و quickstart را بازبینی کن. **خروجی**: `README.md`, `specs/001-change-request-management/quickstart.md`, `specs/001-change-request-management/research.md`, `docs/validation-report.md`. **وابستگی**: T001–T003, T005–T043, T054–T062؛ Taskهای بازنشستهٔ UI وابستگی نیستند.
+- [X] **T053** [Polish] تمام تست‌های Backend، شش سناریوی Assignment، آزمون‌های SQLite contention و auth/session/CSRF را روی Windows/PowerShell واقعاً اجرا کن؛ Build، Test و Validation را جداگانه با فرمان/خروجی/محدودیت ثبت کن؛ بعد از تغییر اسناد، traceability و quickstart را بازبینی کن. **خروجی**: `README.md`, `specs/001-change-request-management/quickstart.md`, `specs/001-change-request-management/research.md`, `docs/local-toolchain.md`, `docs/local-security.md`, `docs/api-examples.md`, `docs/human-acceptance.md`, `docs/validation-report.md`. **وابستگی**: T001–T003, T005–T043, T054–T062؛ Taskهای بازنشستهٔ UI وابستگی نیستند.
+
+## Phase 8: Converge و تکمیل اقلام تحویل
+
+- [X] **T063** [Converge] انطباق read-only اقلام تحویل با بخش ۷ Assignment را بررسی و کمبود README و گزارش‌های مستقل را مستند تکمیل کن؛ پاسخ‌های شخصی مفهومی را بازنویسی نکن. رفتار پیاده‌سازی و آزمون چرخهٔ RequestChanges، اصلاح و Submit مجدد را با FR/AC و Taskهای موجود تطبیق بده. Converge نباید کد محصول یا آزمون را اصلاح کند؛ هر شکاف کد/آزمون باید به Task اصلاحی مستقل تبدیل شود. **خروجی**: `README.md`, `docs/analyze-report.md`, `docs/converge-report.md`, `specs/001-change-request-management/tasks.md`. **وابستگی**: T053, T034–T035, T043, T060–T061.
 
 ## ردیابی Requirement و Acceptance به Task
 
@@ -141,4 +145,4 @@
 
 - T001 فقط در محیط Windows 11 Enterprise x64 ثبت‌شده در این مخزن پاس شده است؛ محیط‌های دیگر باید compatibility را مستقل اعتبارسنجی کنند.
 - مسیر HTTP خطا برای Version مطابق قرارداد (`409/412`) و برای contention (`503`) است؛ قرارداد API replay خودکار فرمان تغییردهنده را مجاز نمی‌کند.
-- Analyze و پذیرش انسانی در این artifact انجام‌شده فرض نشده‌اند؛ آن‌ها شواهد جداگانهٔ مراحل بعد هستند.
+- گزارش بازبینی Analyze در `docs/analyze-report.md` و گزارش Converge در `docs/converge-report.md` ثبت شده‌اند؛ پذیرش انسانی انجام‌شده فرض نشده و همچنان باز است.
