@@ -4,6 +4,8 @@
 
 **قالب**: `.specify/templates/tasks-template.md`؛ همهٔ Taskها شناسه، خروجی/مسیر و وابستگی دارند. آزمون‌ها به‌علت قانون‌نامه و Assignment اجباری‌اند و optional نیستند.
 
+**دامنهٔ بازنشسته**: T004 و T044–T052 متعلق به تصمیم UI قبلی بودند؛ پس از تأیید Backend-only بازنشسته‌اند، شناسه‌هایشان دوباره استفاده نمی‌شود و جزو Taskهای فعال نیستند.
+
 **قواعد اجرا**:
 
 - هر Task تا اجرای واقعی unchecked می‌ماند. در مرحلهٔ فعلی هیچ Taskی اجرا نشده است.
@@ -105,7 +107,7 @@
 
 ## Phase 7: اعتبارسنجی و مستندسازی نهایی
 
-- [ ] **T053** [Polish] تمام تست‌های Backend، شش سناریوی Assignment، آزمون‌های SQLite contention، auth/session/CSRF و UI/E2E را روی Windows/PowerShell واقعاً اجرا کن؛ Build، Test و Validation را جداگانه با فرمان/خروجی/محدودیت ثبت کن؛ بعد از تغییر اسناد، traceability و quickstart را بازبینی کن. **خروجی**: `README.md`, `specs/001-change-request-management/quickstart.md`, `specs/001-change-request-management/research.md`, `docs/validation-report.md`. **وابستگی**: T001–T052, T054–T062.
+- [ ] **T053** [Polish] تمام تست‌های Backend، شش سناریوی Assignment، آزمون‌های SQLite contention، auth/session/CSRF و UI/E2E را روی Windows/PowerShell واقعاً اجرا کن؛ Build، Test و Validation را جداگانه با فرمان/خروجی/محدودیت ثبت کن؛ بعد از تغییر اسناد، traceability و quickstart را بازبینی کن. **خروجی**: `README.md`, `specs/001-change-request-management/quickstart.md`, `specs/001-change-request-management/research.md`, `docs/validation-report.md`. **وابستگی**: T001–T003, T005–T043, T053–T062.
 
 ## ردیابی Requirement و Acceptance به Task
 
@@ -132,7 +134,7 @@
 | FR-019–FR-020 | T006–T008, T017–T018, T041, T043, T058 |
 | FR-022–FR-023 | T021–T022, T059 |
 | FR-024–FR-026 | T025–T026, T034–T035, T038, T043, T060–T061 |
-| FR-027–FR-032 | T044–T052 |
+| FR-027–FR-032 | بازنشسته؛ تصمیم دامنهٔ Backend-only |
 
 ### Acceptance Scenarios
 
@@ -142,16 +144,16 @@
 - AC-020–AC-022: ترتیب process/commit و snapshot در T041؛ AC-024–AC-026: T038 و stale version در T032.
 - AC-023: T058؛ AC-027–AC-031: T059؛ AC-032–AC-033: T034؛ AC-035: T060؛ AC-036: T061.
 - If-Match مفقود و 428 در قرارداد: T062؛ نسخهٔ stale و 412: T032/T038.
-- AC-037–AC-045: T044–T052؛ AC-043/044 نیز از Backend T039–T040 پیروی می‌کنند؛ AC-044/046 فرم دارای تغییرات ذخیره‌نشده را در T050/T052 می‌آزمایند.
+- AC-037–AC-046: با تصمیم Backend-only بازنشسته؛ UI یا آزمون رابط در تحویل نسخهٔ اول نیست.
 
 ## ترتیب و موازی‌سازی
 
-- ترتیب سخت: T001 gate → setup/schema/transaction → auth/session/CSRF/rate-limit → CLI → Application/API + آزمون‌های Backend و Acceptance → contention و role revoke → UI + آزمون‌ها → validation/docs.
+- ترتیب سخت: T001 gate → setup/schema/transaction → auth/session/CSRF/rate-limit → CLI → Application/API + آزمون‌های Backend و Acceptance → contention و role revoke → validation/docs.
 - فقط T003، T004 و T005 با `[P]` علامت‌گذاری شده‌اند: پس از scaffold هرکدام فایل‌ها/پیکربندی جدا دارند و یکدیگر را تغییر نمی‌دهند. سایر Taskها وابستگی کد/قرارداد یا آزمون قبلی دارند و عمداً موازی نیستند.
 - تست‌های T023/T025/T027/T028/T030/T032 قبل از پیاده‌سازی مسیر متناظر مشخص شده‌اند تا آزمون پذیرش مستقل و قابل ردیابی باشد.
 
 ## Notes
 
 - T001 شامل اجرای نصب/compatibility در Implement آینده است؛ این اجرای Tasks فعلی نیست. تا گذر واقعی آن، هیچ build/test/install موفقی ادعا نمی‌شود.
-- مسیر HTTP خطا برای Version مطابق قرارداد (`409/412`) و برای contention (`503`) است؛ UI هیچ mutation کهنه را خودکار بازپخش نمی‌کند.
+- مسیر HTTP خطا برای Version مطابق قرارداد (`409/412`) و برای contention (`503`) است؛ قرارداد API replay خودکار فرمان تغییردهنده را مجاز نمی‌کند.
 - Analyze و پذیرش انسانی در این artifact انجام‌شده فرض نشده‌اند؛ آن‌ها شواهد جداگانهٔ مراحل بعد هستند.

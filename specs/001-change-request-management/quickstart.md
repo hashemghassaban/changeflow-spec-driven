@@ -5,9 +5,9 @@
 ## پیش‌نیازهای پیشنهادی
 
 - Windows و PowerShell.
-- Node.js 26 LTS patch دقیق pin‌شده در T001 و npm سازگار.
-- وابستگی‌های exact pin شده و lockfile؛ نصب clean با `npm ci` فقط پس از گذر T001.
-- مرورگر پشتیبانی‌شده برای اجرای UI و E2E؛ نصب browser binary مربوط به Playwright در مرحلهٔ پیاده‌سازی.
+- Node.js `26.13.1` و npm محلی `12.2.2`؛ مسیر و hash ابزار باید در T001 ثبت شوند.
+- وابستگی‌های exact pin شده و lockfile؛ clean install با npm `12.2.2` پس از تعیین `allowScripts` امن و عبور T001.
+- npm محلی `12.2.2` برای اجرای clean install مطابق سیاست lifecycle اسکریپت‌های npm 12.
 
 ## فرمان‌های پیشنهادی پس از ساخت سورس
 
@@ -16,13 +16,7 @@ npm ci
 npm run dev
 ```
 
-فرمان جداگانهٔ پیشنهادی برای رابط React/Vite:
-
-```powershell
-npm run dev:web
-```
-
-در جریان توسعه، Vite باید `/api` را به Backend proxy کند تا UI و cookie نشست هم‌مبدأ بمانند. برای اجرای مستقل بعد از ساخت، ابتدا CLI محلی account-create و role-grant اجرا شود؛ ابزار، گذرواژه را محرمانه دریافت و RoleGrant را در SQLite تنظیم می‌کند. کاربر نباید از UI شناسه یا نقش انتخاب کند.
+برای اجرای محلی API، ابتدا CLI محلی account-create و role-grant اجرا شود؛ ابزار، گذرواژه را محرمانه دریافت و RoleGrant را در SQLite تنظیم می‌کند. هویت و نقش از درخواست client پذیرفته نمی‌شوند.
 
 CLI پیشنهادی به فایل DB از راه Windows ACL محدود است و listener شبکه ندارد. فرمان‌های اجرایی نهایی از جمله ایجاد حساب، اعطای/لغو نقش و پاک‌سازی نشست منقضی باید بعد از Implement مستند شوند؛ گذرواژه نباید در آرگومان فرمان یا log قرار گیرد.
 
@@ -52,8 +46,6 @@ npm test
 10. ورودی خالی، صرفاً فاصله، حد دقیق و یک نویسه بیش از سقف برای هر سه فیلد و توضیح Reviewer بررسی شود؛ ویرایش نامعتبر هیچ تغییر جزئی نگذارد.
 11. توضیح Reviewer همراه ChangesRequested اتمی باشد، دیده‌شدن آن مطابق نقش‌ها باشد، با edit/submit حفظ و با RequestChanges بعدی جایگزین شود.
 12. Submit محتوای یکسان، وقتی سایر شرایط جاری معتبرند، صرفاً به دلیل یکسانی رد نشود.
-13. آزمون component رابط برای فرم‌های ایجاد/ویرایش، وضعیت، توضیح Reviewer و پیام‌های validation/permission/conflict؛ با تمرکز بر تعامل کاربر، نه جزئیات داخلی.
-14. آزمون E2E روی Backend/SQLite واقعی برای ورود/خروج، scope نقش‌ها، ایجاد/Submit، approve مستقل، RequestChanges با توضیح و تعارض نسخهٔ stale. mock API فقط برای تست component است و کنترل Backend را ثابت نمی‌کند.
 15. آزمون CSRF برای درخواست تغییردهنده، نشست نامعتبر/خروج و role revocation در عملیات واقعی؛ ردها باید هم از پاسخ HTTP و هم از snapshot DB سنجیده شوند.
 16. بررسی انقضای idle و absolute session، rotation هنگام login، logout و پاک‌سازی sessionهای منقضی؛ نشست منقضی نباید عملیات انجام دهد.
 17. آزمون‌های scrypt با salt یکتا و parameter metadata؛ KDF async خارج transaction و hash comparison زمان‌ثابت.
@@ -67,6 +59,6 @@ npm test
 
 ## تنظیمات توسعه و استقرار طراحی‌شده
 
-- توسعهٔ محلی: API و Vite روی localhost؛ Vite proxy برای `/api`؛ `Secure=false` فقط برای HTTP localhost؛ `HttpOnly` و `SameSite=Lax` همچنان فعال؛ حساب‌ها و RoleGrant فقط با CLI محلی و ACL فایل محدود.
+- توسعهٔ محلی: API روی localhost؛ `Secure=false` فقط برای HTTP localhost؛ `HttpOnly` و `SameSite=Lax` همچنان فعال؛ حساب‌ها و RoleGrant فقط با CLI محلی و ACL فایل محدود.
 - استقرار واقعی: HTTPS/TLS، cookie `Secure`، راز نشست بیرون از مخزن، CSRF token و بررسی Origin، proxy مورداعتماد دقیق، ACL محدود فایل DB و backup. استقرار چندنمونه‌ای با SQLite تک‌فایل پوشش داده نشده و نیازمند بازبینی معماری است.
 - هیچ‌یک از دستورها هنوز اجرا نشده‌اند و این مستند، موفقیت build/test یا پذیرش انسانی را گزارش نمی‌کند.

@@ -13,21 +13,17 @@ Node.js 26 LTS + TypeScript برای HTTP API تأیید شده است. Node `26
 
 | گزینه | مزیت | هزینه/ریسک | نتیجه |
 |---|---|---|---|
-| Node.js + TypeScript + Express 5 | با انتخاب تأییدشده هم‌راستا؛ یک زبان برای API و UI؛ Express 5 HTTP layer کوچک و شناخته‌شده‌ای می‌دهد. | اعتبارسنجی و مرزهای Application باید آگاهانه طراحی شوند؛ Express به‌تنهایی معماری یا مجوز امن را تضمین نمی‌کند. Express 5 نسبت به 4 تغییرات ناسازگار دارد و نسخهٔ 5 به Node 18 یا جدیدتر نیاز دارد؛ از آغاز روی 5 کار شود. [راهنمای Express 5](https://expressjs.com/en/guide/migrating-5/) | **انتخاب تأییدشده** |
-| ASP.NET Core Minimal APIs + C# | مسیر رسمی کم‌تشریفات برای API و گزینهٔ قوی برای اجرای محلی Windows؛ امکانات میزبان و API در چارچوب فراهم‌اند. [راهنمای Microsoft](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/apis?view=aspnetcore-10.0) | زبان متفاوت از UI React/TypeScript؛ یادگیری/نگهداری دو زبان در نسخهٔ دارای UI. | رد در پیشنهاد فعلی به‌علت اولویت هم‌زبانی، نه نقص فنی. |
+| Node.js + TypeScript + Express 5 | با انتخاب تأییدشده هم‌راستا؛ یک زبان برای پیاده‌سازی Backend؛ Express 5 HTTP layer کوچک و شناخته‌شده‌ای می‌دهد. | اعتبارسنجی و مرزهای Application باید آگاهانه طراحی شوند؛ Express به‌تنهایی معماری یا مجوز امن را تضمین نمی‌کند. Express 5 نسبت به 4 تغییرات ناسازگار دارد و نسخهٔ 5 به Node 18 یا جدیدتر نیاز دارد؛ از آغاز روی 5 کار شود. [راهنمای Express 5](https://expressjs.com/en/guide/migrating-5/) | **انتخاب تأییدشده** |
+| ASP.NET Core Minimal APIs + C# | مسیر رسمی کم‌تشریفات برای API و گزینهٔ قوی برای اجرای محلی Windows؛ امکانات میزبان و API در چارچوب فراهم‌اند. [راهنمای Microsoft](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/apis?view=aspnetcore-10.0) | زبان جایگزین و runtime متفاوت از Node/TypeScript؛ | رد در پیشنهاد فعلی به‌علت اولویت هم‌زبانی، نه نقص فنی. |
 | Node.js + Fastify | چارچوب جایگزین API با قرارداد schema پررنگ‌تر. | تفاوت ارزش عملی برای این API کوچک هنوز اثبات نشده و چارچوب دیگری باید آموخته/نگهداری شود. | رد؛ Express انتخاب تأییدشده است. |
 
 ### نتیجه
 
 پیشنهاد می‌شود Express فقط در مرز HTTP باشد. Route نباید وضعیت، مالکیت، اعتبارسنجی دامنه یا قواعد موازی را خودش اعمال کند؛ به Use Caseهای Application واگذار کند.
 
-## 2. React و محدودهٔ UI
+## 2. دامنهٔ Backend-only
 
-React + TypeScript + Vite تأیید شده است. راهنمای رسمی React مسیر Vite با قالب `react-ts` را معرفی می‌کند. UI کوچک است و نیاز SSR یا routing گسترده در Spec نیست؛ Framework بزرگ‌تر هزینهٔ غیرلازم می‌آورد. [React: Build from Scratch](https://react.dev/learn/build-a-react-app-from-scratch), [React + TypeScript](https://react.dev/learn/typescript)
-
-**تصمیم محصولی تأییدشده**: React + TypeScript + Vite UI ساده در نسخهٔ اول است و ترتیب تحویل API و آزمون‌های Backend، سپس UI خواهد بود. UI فقط جریان‌های ثبت‌شده در FR-027 تا FR-032 و AC-037 تا AC-046 را ارائه می‌کند و Backend مرجع مستقل مجوز است. فرم دارای تغییرات ذخیره‌نشده از Draft ذخیره‌شده متمایز است؛ در تازه‌سازی دادهٔ درون برنامه بدون reload کامل صفحه و پاسخ تعارض نسخه، ورودی نباید با دادهٔ دریافتی بازنویسی شود و دورریختن/جایگزینی نیازمند انتخاب صریح کاربر است. حفظ/بازیابی پس از reload کامل، بستن تب یا crash و هشدار خروج مرورگر تعهد نیست؛ localStorage/offline افزوده نمی‌شود. نیازمندی‌ها و پذیرش UI در Spec ثبت شده‌اند.
-
-**راهبرد آزمون پیشنهادی**: آزمون‌های DOM محور برای فرم‌ها، پیام خطا و وضعیت رابط؛ سپس E2E مرورگر با API و SQLite واقعی برای ورود/خروج، مشاهدهٔ محدودشده، عملیات نقش‌ها و تعارض نسخه. Mock تنها برای آزمون component است؛ آزمون‌های Backend و بررسی DB سناریوهای حساس لازم می‌مانند. پیشنهاد ابزار: React Testing Library با Vitest و Playwright برای E2E؛ این ترکیب با Node LTS پیشنهادی سازگار به نظر می‌رسد، اما نسخه‌های دقیق در مرحلهٔ پیاده‌سازی/lockfile دوباره pin و بررسی شوند.
+تصمیم محصولی فعلی، نسخهٔ اول را به Backend و HTTP API محدود می‌کند؛ React، Frontend و آزمون مرورگر بخشی از تحویل نیستند. بخش UI قبلی و پیشنهادهای آن superseded شده‌اند و شناسه‌های سابق در Spec صرفاً برای ردیابی بازنشستگی باقی می‌مانند.
 
 ## 3. Persistence و هم‌زمانی
 
@@ -51,6 +47,10 @@ SQLite محلی برای نسخهٔ اول تک‌سرویسی و Windows، مش
 **گزینهٔ ردشده برای این نسخه**: `node:sqlite` داخلیِ Node 26 dependency native جدا نمی‌خواهد، اما مستند رسمی Node در حال حاضر آن را Stability 1.2 / Release Candidate می‌نامد؛ برای الزام نسخهٔ اول، package فعال با تثبیت بالاتر ترجیح دارد. [Node.js SQLite](https://nodejs.org/api/sqlite.html)
 
 مستندات پروژهٔ driver، `node >=22` و prebuilt برای پلتفرم‌های اصلی را نشان می‌دهند؛ CI جاری آن Node 26 و Windows را آزمایش می‌کند. این شواهد upstream جای نصب/بازکردن native binary روی Windows/Node دقیق محیط اجرا را نمی‌گیرند. افزون بر این، انتشار `13.1.0` اخطار Windows ARM64 داشت و `13.1.1` بعدی منتشر شده است؛ بنابراین T001 باید package دقیق/معماری را تثبیت کند و نصب واقعی، open/close، migration، transaction, rollback و SQLITE_BUSY را gate کند. در شکست، هیچ Task وابسته‌ای شروع نمی‌شود و انتخاب جایگزین نیازمند بازبینی است. [Manifest](https://github.com/WiseLibs/better-sqlite3/blob/master/package.json), [Build matrix](https://github.com/WiseLibs/better-sqlite3/blob/master/.github/workflows/build.yml), [Release notes](https://github.com/WiseLibs/better-sqlite3/releases)
+
+## 3.5 نصب امن npm
+
+برای Windows x64 و Node 26.13.1، npm 12.2.2 به‌عنوان نسخهٔ دقیق ابزار محلی انتخاب شده است. npm 12 به‌طور پیش‌فرض اسکریپت نصب وابستگی‌هایی را که در `allowScripts` تأیید نشده‌اند مسدود می‌کند؛ خروجی نصب تشخیصی برای `better-sqlite3@13.1.1` این سیاست را نشان داد و API عمومی بسته binding داخل tarball (`prebuilds/win32-x64.node`) را بارگذاری کرد. این مسیر از binary آمادهٔ خود بسته استفاده می‌کند و `node-gyp`/ابزار C++ را لازم ندارد. این شواهد فقط همان install/smoke را ثابت می‌کند؛ T001 clean install، load و عملیات کامل DB را دوباره در محیط پروژه می‌آزماید. برای وابستگی جدید، lifecycleها باید پیش از allow کردن بررسی شوند؛ اسکریپت‌های غیرضروری مجاز نشوند و `--ignore-scripts`/`--force` راهکار نیستند. منابع: [npm CLI 12.0.0 policy](https://github.com/npm/cli/blob/latest/CHANGELOG.md), [npm issue #9837](https://github.com/npm/cli/issues/9837), [better-sqlite3 issue #1516](https://github.com/WiseLibs/better-sqlite3/issues/1516).
 
 ## 4. هویت، مجوز و لغو نقش
 
@@ -93,7 +93,7 @@ SQLite تراکنش `IMMEDIATE` را گزینه‌ای برای گرفتن قف�
 
 پس از ورود، شناسهٔ نشست با 32 بایت تصادفی ساخته، بعد از احراز credential rotate و فقط hash شناسه در SQLite ذخیره می‌شود؛ نقش در cookie/session کپی نمی‌شود. نشست idle پس از 30 دقیقه و مطلق پس از 12 ساعت expire می‌شود؛ هر درخواست احرازشده `lastSeenAt` را در همان عملیات DB به‌روزرسانی می‌کند. نشست نامعتبر/منقضی رد می‌شود، logout ردیف نشست را حذف می‌کند، ورود پاک‌سازی ردیف‌های منقضی را انجام می‌دهد و CLI زیر‌فرمان `sessions prune` پاک‌سازی دستی می‌دهد. Cookie فقط شناسه را دارد و `HttpOnly`, `SameSite=Lax`; `Secure` در HTTPS. `MemoryStore` استفاده نمی‌شود. (مستندات Express تأیید می‌کنند دادهٔ express-session سمت سرور می‌ماند و MemoryStore برای production مناسب نیست.) [Express session](https://expressjs.com/en/resources/middleware/session/)
 
-**CSRF/Origin نهایی:** هر Session دارای token تصادفی 32-byte CSRF است که server-side ذخیره می‌شود؛ `/auth/session` آن را به client همان origin می‌دهد؛ تغییرهای POST/PATCH/PUT/DELETE و logout باید آن را در `X-CSRF-Token` بفرستند. Backend با مقایسهٔ زمان‌ثابت token و بررسی exact Origin نسبت به allowlist تنظیم‌شده هر تغییر را رد می‌کند؛ Origin مفقود/نامنطبق رد می‌شود. Login نیز Origin exact را بررسی می‌کند. CORS cross-origin باز نمی‌شود و `SameSite=Lax` فقط دفاع تکمیلی است. در توسعه Vite مسیر هم‌مبدأ `/api` proxy می‌کند؛ cookie Secure فقط برای HTTP localhost خاموش است. در استقرار واقعی TLS، `Secure`, secret بیرون مخزن، proxy مورد اعتماد دقیق و ACL DB/backup لازم است. (رفتار cookie بر پایهٔ مستندات رسمی Express.)
+**CSRF/Origin نهایی:** هر Session دارای token تصادفی 32-byte CSRF است که server-side ذخیره می‌شود؛ `/auth/session` آن را به client همان origin می‌دهد؛ تغییرهای POST/PATCH/PUT/DELETE و logout باید آن را در `X-CSRF-Token` بفرستند. Backend با مقایسهٔ زمان‌ثابت token و بررسی exact Origin نسبت به allowlist تنظیم‌شده هر تغییر را رد می‌کند؛ Origin مفقود/نامنطبق رد می‌شود. Login نیز Origin exact را بررسی می‌کند. CORS cross-origin باز نمی‌شود و `SameSite=Lax` فقط دفاع تکمیلی است. در توسعه cookie Secure فقط برای HTTP localhost خاموش است. در استقرار واقعی TLS، `Secure`, secret بیرون مخزن، proxy مورد اعتماد دقیق و ACL DB/backup لازم است. (رفتار cookie بر پایهٔ مستندات رسمی Express.)
 
 **محدودسازی ورود و عدم افشای حساب:** هر تلاش login پیش از scrypt در تراکنش کوتاه SQLite رزرو می‌شود تا درخواست‌های هم‌زمان از سقف عبور نکنند. Rolling window برابر ۱۵ دقیقه است: حداکثر ۶۰ تلاش از یک IP و ۱۰ تلاش برای جفت login/IP؛ تلاش بالاتر از حد با `429` و `Retry-After` تا انقضای قدیمی‌ترین تلاش رد می‌شود و خود ردشدن پنجره را تمدید نمی‌کند. رکوردهای قدیمی‌تر از ۲۴ ساعت در هر ورود پاک می‌شوند؛ پس از خروج رکوردهای قدیمی از پنجره امکان تلاش خودکار بازمی‌گردد. موفقیت ورود bucket همان جفت را پاک می‌کند، نه bucket IP را. محدودیت به حساب به‌تنهایی وابسته نیست و قفل دائمی/سراسری حساب ایجاد نمی‌کند؛ IP مشترک (در localhost معمولاً loopback) می‌تواند کاربران همان مبدأ را موقتاً محدود کند. حملهٔ توزیع‌شده را به‌طور کامل متوقف نمی‌کند. IP از `socket.remoteAddress` می‌آید؛ `X-Forwarded-For` فقط پشت proxy/hop صریحاً مورداعتماد پذیرفته می‌شود. شناسهٔ login محدودسازی، HMAC-SHA-256 از بایت‌های خام ورودی است تا سیاست نرمال‌سازی login جدیدی به محصول تحمیل نشود؛ بنابراین تغییر نگارش login ممکن است bucket جفتی دیگری بسازد، اما سقف IP همچنان اعمال می‌شود. کلید HMAC تصادفی ۳۲‌بایتی در تنظیم محلی خارج از مخزن/با ACL نگهداری می‌شود؛ چرخش آن reset شمارنده‌هاست. login ناموجود و گذرواژهٔ نادرست پاسخ عمومی یکسان و مسیر scrypt مشابه با dummy hash معتبر دارند؛ برابری کامل زمان پاسخ ادعا نمی‌شود. گذرواژه، session ID، CSRF token و headerهای حامل آن‌ها از log حذف می‌شوند.
 
@@ -132,9 +132,9 @@ SQLite تراکنش `IMMEDIATE` را گزینه‌ای برای گرفتن قف�
 
 ## 6. شمارش نویسه
 
-**انتخاب تأییدشده:** شمارش Unicode grapheme cluster در Backend با `Intl.Segmenter('fa', { granularity: 'grapheme' })`; trim قبل از count؛ نه byte و نه UTF-16 code unit. Node patch در lock/config pin و helper Backend با فارسی/اعراب ترکیبی/emoji/ZWJ آزمون می‌شود. UI سقف را client-side enforce نمی‌کند؛ نتیجهٔ validation Backend مرجع است تا تفاوت ICU مرورگر و Node نتایج ناسازگار ندهد. [ECMA-402 Segmenter Objects](https://tc39.es/ecma402/#segmenter-objects)
+**انتخاب تأییدشده:** شمارش Unicode grapheme cluster در Backend با `Intl.Segmenter('fa', { granularity: 'grapheme' })`; trim قبل از count؛ نه byte و نه UTF-16 code unit. Node patch در lock/config pin و helper Backend با فارسی/اعراب ترکیبی/emoji/ZWJ آزمون می‌شود. [ECMA-402 Segmenter Objects](https://tc39.es/ecma402/#segmenter-objects)
 
-UI خطای اعتبارسنجی و سقف را از پاسخ Backend نشان می‌دهد؛ خودش تصمیم طول مستقل تولید نمی‌کند. اگر Node target از Segmenter منتخب پشتیبانی نکند، T001 compatibility gate مانع Implement می‌ماند.
+اگر Node target از Segmenter منتخب پشتیبانی نکند، T001 compatibility gate مانع Implement می‌ماند.
 
 ## 7. آزمون و شواهد
 
@@ -143,7 +143,7 @@ UI خطای اعتبارسنجی و سقف را از پاسخ Backend نشان �
 - آزمون HTTP: احراز subject، role scope در فهرست/جزئیات، نگاشت conflict و عدم افشای جزئیات.
 - آزمون race: دو تغییر روی یک Version؛ لغو نقش قبل/بعد از commit؛ اطمینان از حداکثر یک تغییر و حفظ داده پس از rollback.
 - Assignment AC-001 تا AC-006 و Spec AC-001 تا AC-036 باید به آزمون‌های مشخص ردیابی شوند. برای شکست‌های امنیتی، علاوه بر پاسخ HTTP، دادهٔ پایگاه داده خوانده و مقایسه شود.
-- پذیرش UI طبق AC-037 تا AC-046 به آزمون‌های component و E2E ردیابی شود. این آزمون‌ها کنترل دسترسی Backend را اثبات نمی‌کنند و جای آزمون مستقیم HTTP/داده را نمی‌گیرند.
+- آزمون و پذیرش نسخهٔ جاری Backend-only است؛ آزمون مستقیم HTTP و دادهٔ ماندگار لازم است.
 - Build/Test/Validation فقط پس از اجرای واقعی گزارش شوند. این مرحله هیچ آزمونی اجرا نکرده است.
 
 ## منابع رسمی
@@ -151,11 +151,6 @@ UI خطای اعتبارسنجی و سقف را از پاسخ Backend نشان �
 - [Node.js Release Schedule](https://nodejs.org/en/about/previous-releases)
 - [Node.js v26.13.0 LTS](https://nodejs.org/en/blog/release/v26.13.0)
 - [Node.js v26.13.1 LTS security release](https://nodejs.org/en/blog/release/v26.13.1)
-- [Vite 8 Node.js requirements](https://vite.dev/guide/)
-- [Vite 8 announcement](https://vite.dev/blog/announcing-vite8)
-- [Vitest requirements](https://vitest.dev/guide/)
-- [Playwright installation](https://playwright.dev/docs/intro)
-- [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
 - [Express 5 Migration Guide](https://expressjs.com/en/guide/migrating-5/)
 - [Express session middleware](https://expressjs.com/en/resources/middleware/session/)
 - [Express security best practices](https://expressjs.com/en/advanced/best-practice-security/)
@@ -166,8 +161,6 @@ UI خطای اعتبارسنجی و سقف را از پاسخ Backend نشان �
 - [better-sqlite3 API](https://github.com/WiseLibs/better-sqlite3/blob/master/docs/api.md)
 - [better-sqlite3 release history](https://github.com/WiseLibs/better-sqlite3/releases)
 - [better-sqlite3 CI build matrix](https://github.com/WiseLibs/better-sqlite3/blob/master/.github/workflows/build.yml)
-- [React: Build a React App from Scratch](https://react.dev/learn/build-a-react-app-from-scratch)
-- [React: TypeScript](https://react.dev/learn/typescript)
 - [ASP.NET Core API overview](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/apis?view=aspnetcore-10.0)
 - [SQLite Isolation](https://www.sqlite.org/isolation.html)
 - [SQLite Transactions](https://sqlite.org/lang_transaction.html)

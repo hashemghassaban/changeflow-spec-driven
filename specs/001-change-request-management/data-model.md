@@ -1,6 +1,6 @@
 # مدل دادهٔ پیشنهادی
 
-این مدل از FR-003 تا FR-031، Clarifications و انتخاب‌های فنی تأییدشده استخراج شده است. جزئیات اجرایی در این سند طراحی‌اند؛ Schema/Migration تا Implement تولید نمی‌شود.
+این مدل از FR-003 تا FR-026، Clarifications و انتخاب‌های فنی تأییدشده استخراج شده است. جزئیات اجرایی در این سند طراحی‌اند؛ Schema/Migration تا Implement تولید نمی‌شود.
 
 ## ChangeRequest
 
@@ -69,8 +69,8 @@ RoleGrant در همان SQLite محل ChangeRequest و منبع نهایی نق�
 - `SQLITE_BUSY` پس از timeout پنج ثانیه موجب rollback و پاسخ `503 Service Unavailable` با `Retry-After: 5` می‌شود؛ mutation خودکار replay نمی‌شود. تشخیص موفقیت فقط با read نسخهٔ جاری و فرمان نو با version تازه ممکن است.
 - هیچ فیلد soft-delete/archive/cancel و هیچ status اضافی تعریف نمی‌شود.
 - اطلاعات نمایشی کاربر، تاریخچهٔ کامل بازبینی، یا approver history افزوده نمی‌شود؛ Spec آن‌ها را الزام نکرده است.
-- UI هیچ منبع اختیار جداگانه‌ای نیست؛ نقش‌ها و دسترسی‌های نمایشی از پاسخ Backend می‌آیند.
+- هیچ نقش یا شناسهٔ ارسالی از client منبع اختیار نیست؛ Backend مرجع نهایی احراز هویت و مجوز است.
 
 ## اعتبارسنجی متنی
 
-تعریف منتخب: grapheme cluster در Backend با `Intl.Segmenter('fa', { granularity: 'grapheme' })` و Node/ICU pin‌شده. trim پیش از non-empty/length و مقدار trim‌شده ذخیره شود. UI سقف را مستقلاً محاسبه یا enforce نمی‌کند و خطای Backend را نشان می‌دهد. آزمون‌های فارسی، اعراب ترکیبی، emoji و ZWJ مرز شمارش را تثبیت می‌کنند.
+تعریف منتخب: grapheme cluster در Backend با `Intl.Segmenter('fa', { granularity: 'grapheme' })` و Node/ICU pin‌شده. trim پیش از non-empty/length و مقدار trim‌شده ذخیره شود. آزمون‌های فارسی، اعراب ترکیبی، emoji و ZWJ مرز شمارش را تثبیت می‌کنند.
