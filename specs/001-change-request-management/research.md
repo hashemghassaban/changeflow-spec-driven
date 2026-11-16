@@ -7,7 +7,7 @@
 
 ### تصمیم پیشنهادی
 
-Node.js 26 LTS + TypeScript برای HTTP API تأیید شده است. Node `26.13.1` baseline فعلی این طرح است؛ Task آغازین باید patch جاری را دوباره از منبع رسمی بررسی و تمام packageهای دقیق را pin/lock کند. [Node.js Releases](https://nodejs.org/en/about/previous-releases)
+Node.js 26 LTS + TypeScript برای HTTP API تأیید شده است. Node `26.13.1` از release رسمی و `.node-version` pin شده است؛ نسخه‌های دقیق packageها در lockfile ثبت‌اند و شواهد محیطی T001 در `docs/dependency-compatibility.md` آمده است. [Node.js Releases](https://nodejs.org/en/about/previous-releases)
 
 ### گزینه‌ها و Trade-off
 
@@ -23,7 +23,7 @@ Node.js 26 LTS + TypeScript برای HTTP API تأیید شده است. Node `26
 
 ## 2. دامنهٔ Backend-only
 
-تصمیم محصولی فعلی، نسخهٔ اول را به Backend و HTTP API محدود می‌کند؛ React، Frontend و آزمون مرورگر بخشی از تحویل نیستند. بخش UI قبلی و پیشنهادهای آن superseded شده‌اند و شناسه‌های سابق در Spec صرفاً برای ردیابی بازنشستگی باقی می‌مانند.
+تصمیم محصولی فعلی، نسخهٔ اول را به Backend و HTTP API محدود می‌کند؛ React، Frontend و آزمون مرورگر بخشی از تحویل نیستند. بخش تصمیم UI قبلی و پیشنهادهای آن superseded شده‌اند و شناسه‌های سابق در Spec صرفاً برای ردیابی بازنشستگی باقی می‌مانند.
 
 ## 3. Persistence و هم‌زمانی
 
@@ -42,11 +42,11 @@ SQLite محلی برای نسخهٔ اول تک‌سرویسی و Windows، مش
 
 ### SQLite driver انتخاب‌شده
 
-**انتخاب طراحی**: `better-sqlite3@13.1.1` برای نسخهٔ محلی. دلیل: API تراکنشی sync و مستقیم با `BEGIN IMMEDIATE`، وابستگی خارجیِ فعال به‌جای `node-sqlite3` منسوخ، و ساده‌بودن rollback/serialization در یک فرایند محلی. محدودیت آن مسدودکردن event loop هنگام SQL و busy wait است؛ بنابراین Query/transactionها کوتاه می‌مانند و عملیات async مانند scrypt بیرون transaction انجام می‌شوند. `timeout=5000ms`، `journal_mode=WAL` و `foreign_keys=ON` انتخاب می‌شوند. پس از SQLITE_BUSY، rollback و پاسخ `503 Service Unavailable` با `Retry-After: 5` داده می‌شود، نه replay خودکار mutation. این تنظیمات تا گذر gate واقعی T001 روی Windows/Node هدف پیشنهاد تثبیت‌شدهٔ طراحی‌اند. [better-sqlite3 API](https://github.com/WiseLibs/better-sqlite3/blob/master/docs/api.md), [better-sqlite3 Releases](https://github.com/WiseLibs/better-sqlite3/releases)
+**انتخاب طراحی**: `better-sqlite3@13.1.1` برای نسخهٔ محلی. دلیل: API تراکنشی sync و مستقیم با `BEGIN IMMEDIATE`، وابستگی خارجیِ فعال به‌جای `node-sqlite3` منسوخ، و ساده‌بودن rollback/serialization در یک فرایند محلی. محدودیت آن مسدودکردن event loop هنگام SQL و busy wait است؛ بنابراین Query/transactionها کوتاه می‌مانند و عملیات async مانند scrypt بیرون transaction انجام می‌شوند. `timeout=5000ms`، `journal_mode=WAL` و `foreign_keys=ON` انتخاب می‌شوند. پس از SQLITE_BUSY، rollback و پاسخ `503 Service Unavailable` با `Retry-After: 5` داده می‌شود، نه replay خودکار mutation. تنظیمات در T001 روی Windows 11 Enterprise x64/Node 26.13.1 probe شدند؛ شواهد فقط به همان محیط مربوط‌اند. [better-sqlite3 API](https://github.com/WiseLibs/better-sqlite3/blob/master/docs/api.md), [better-sqlite3 Releases](https://github.com/WiseLibs/better-sqlite3/releases)
 
 **گزینهٔ ردشده برای این نسخه**: `node:sqlite` داخلیِ Node 26 dependency native جدا نمی‌خواهد، اما مستند رسمی Node در حال حاضر آن را Stability 1.2 / Release Candidate می‌نامد؛ برای الزام نسخهٔ اول، package فعال با تثبیت بالاتر ترجیح دارد. [Node.js SQLite](https://nodejs.org/api/sqlite.html)
 
-مستندات پروژهٔ driver، `node >=22` و prebuilt برای پلتفرم‌های اصلی را نشان می‌دهند؛ CI جاری آن Node 26 و Windows را آزمایش می‌کند. این شواهد upstream جای نصب/بازکردن native binary روی Windows/Node دقیق محیط اجرا را نمی‌گیرند. افزون بر این، انتشار `13.1.0` اخطار Windows ARM64 داشت و `13.1.1` بعدی منتشر شده است؛ بنابراین T001 باید package دقیق/معماری را تثبیت کند و نصب واقعی، open/close، migration، transaction, rollback و SQLITE_BUSY را gate کند. در شکست، هیچ Task وابسته‌ای شروع نمی‌شود و انتخاب جایگزین نیازمند بازبینی است. [Manifest](https://github.com/WiseLibs/better-sqlite3/blob/master/package.json), [Build matrix](https://github.com/WiseLibs/better-sqlite3/blob/master/.github/workflows/build.yml), [Release notes](https://github.com/WiseLibs/better-sqlite3/releases)
+مستندات پروژهٔ driver، `node >=22` و prebuilt برای پلتفرم‌های اصلی را نشان می‌دهند؛ CI جاری آن Node 26 و Windows را آزمایش می‌کند. این شواهد upstream جای نصب/بازکردن native binary روی Windows/Node دقیق محیط اجرا را نمی‌گیرند. افزون بر این، انتشار `13.1.0` اخطار Windows ARM64 داشت و `13.1.1` بعدی منتشر شده است؛ بنابراین package دقیق و معماری در manifest تثبیت شد؛ T001 clean install، بارگذاری native، transaction/rollback و SQLITE_BUSY را روی محیط محلی پاس کرد. این شواهد سازگاری عمومی را تضمین نمی‌کند. [Manifest](https://github.com/WiseLibs/better-sqlite3/blob/master/package.json), [Build matrix](https://github.com/WiseLibs/better-sqlite3/blob/master/.github/workflows/build.yml), [Release notes](https://github.com/WiseLibs/better-sqlite3/releases)
 
 ## 3.5 نصب امن npm
 
@@ -85,7 +85,7 @@ SQLite تراکنش `IMMEDIATE` را گزینه‌ای برای گرفتن قف�
 |---|---|---|
 | ورود محلی با نام کاربری/گذرواژه، scrypt، نشست opaque سمت سرور | ساده و مناسب اجرای محلی؛ سرور subject را تعیین می‌کند؛ لغو نشست ممکن است؛ نقش‌ها در DB جاری خوانده می‌شوند. | برنامه مسئول نگهداری اعتبارنامه و دفاع در برابر brute force است؛ **انتخاب تأییدشده** با CLI provisioning و DB محافظت‌شده. |
 | OIDC Authorization Code + PKCE با IdP | ورود و اعتبارنامه را به ارائه‌دهندهٔ هویت واگذار می‌کند؛ نیاز به نگهداری گذرواژهٔ محلی ندارد. | وابستگی به تنظیم IdP/شبکه دارد؛ JWT نقش‌دارِ قدیمی و بررسی جداگانهٔ IdP با SQLite فاصلهٔ TOCTOU را رفع نمی‌کنند. فقط اگر RoleGrant در DB محلی منبع نهایی مجوز بماند یا پروتکل مشترک اتمی ارائه شود قابل بررسی است؛ برای اجرای مستقل محلی ساده نیست. |
-| نقش/شناسه انتخاب‌شده در UI یا header دلخواه | پیاده‌سازی ظاهری ساده. | هویت جعلی و ناامن؛ **رد**. فقط fixture تست مجاز است. |
+| userId/role دلخواه از client یا header | ساده به نظر می‌رسد. | هویت جعلی و ناامن؛ **رد**. فقط fixture تست مجاز است. |
 
 **انتخاب اجرا:** Backend هویت را از credential تأییدشده استخراج می‌کند و هرگز به `userId` یا role ارسالی مرورگر اعتماد نمی‌کند. کاربر اولیه فقط با CLI محلی تحت مجوز OS ساخته می‌شود؛ ثبت‌نام عمومی/API مدیریت کاربر وجود ندارد. CLI گذرواژه را به‌صورت تعاملی/ورودی امن می‌گیرد، در آرگومان خط فرمان یا log نمی‌نویسد، و hash/metadata را ذخیره می‌کند.
 
@@ -99,7 +99,7 @@ SQLite تراکنش `IMMEDIATE` را گزینه‌ای برای گرفتن قف�
 
 **تأمین و لغو RoleGrant (تأییدشده):** CLI محلی مجزا از API محصول، با فرمان account-create / role-grant / role-revoke / sessions-prune، توسط Windows account محدود مجاز اجرا می‌شود؛ CLI هیچ port/network listener ندارد و DB ACL اجرای آن را محدود می‌کند. CLI و API از یک `BEGIN IMMEDIATE` و transaction boundary استفاده می‌کنند. عملیات حساس داخل همان تراکنش Session جاری، RoleGrant جاری، مالکیت، state، expected version را می‌خواند و mutation می‌کند. commit mutation نقطهٔ تکمیل است؛ commit role revoke نقطهٔ مؤثرشدن لغو. اگر revoke commit شود اول، mutation بعدی نقش را نمی‌بیند و rollback می‌شود؛ اگر mutation commit شود اول، معتبر می‌ماند. Revoke نقش دیگر را تحت تأثیر نمی‌گذارد.
 
-**زمان‌بندی SQLite:** تراکنش حساس کوتاه و sync با `BEGIN IMMEDIATE`؛ `better-sqlite3` timeout 5000ms، `journal_mode=WAL` و `foreign_keys=ON`. KDF/network/CLI prompt بیرون transaction است. SQLITE_BUSY پس از timeout: rollback، هیچ mutation جزئی، پاسخ `503` با `Retry-After: 5`، بدون replay؛ UI باید پس از هشدار read refresh کند و فرمان را با version قبلی نفرستد. Errorهای دیگر transaction نیز rollback کامل و بررسی `inTransaction` قبل از هر ادامه دارند. تست با connection/process دوم وضعیت rowها را بعد از busy/rollback مقایسه می‌کند. [better-sqlite3 API](https://github.com/WiseLibs/better-sqlite3/blob/master/docs/api.md)
+**زمان‌بندی SQLite:** تراکنش حساس کوتاه و sync با `BEGIN IMMEDIATE`؛ `better-sqlite3` timeout 5000ms، `journal_mode=WAL` و `foreign_keys=ON`. KDF/network/CLI prompt بیرون transaction است. SQLITE_BUSY پس از timeout: rollback، هیچ mutation جزئی، پاسخ `503` با `Retry-After: 5`، بدون replay؛ client نباید پس از خطای contention فرمان تغییردهنده را خودکار با version قبلی replay کند. Errorهای دیگر transaction نیز rollback کامل و بررسی `inTransaction` قبل از هر ادامه دارند. تست با connection/process دوم وضعیت rowها را بعد از busy/rollback مقایسه می‌کند. [better-sqlite3 API](https://github.com/WiseLibs/better-sqlite3/blob/master/docs/api.md)
 
 `journal_mode=WAL` ویژگی پایگاه داده است: هنگام آماده‌سازی فایل DB اعمال و مقدار بازگشتی/مؤثر تأیید می‌شود؛ آن را به‌عنوان تنظیم مستقل هر اتصال معرفی نمی‌کنیم. `foreign_keys=ON` و `busy_timeout=5000` تنظیمات هر connection هستند و هر اتصال تازه باید آن‌ها را اعمال و با PRAGMA بخواند/تأیید کند. آزمون contention دو process/connection مستقل را با IPC barrier هماهنگ می‌کند: writer اول `BEGIN IMMEDIATE` را می‌گیرد و پیام آماده می‌دهد؛ writer دوم پس از آن درخواست واقعی/SQL را شروع می‌کند؛ پس از نتیجهٔ busy، writer اول rollback می‌کند. آزمون نباید writer را در انتظار پیام داخل transaction نگه دارد به‌گونه‌ای که release قفل ناممکن شود. هر دو DB connection باید پس از خطا `inTransaction=false` و snapshot ثابت داشته باشند؛ آزمون HTTP باید 503 و `Retry-After: 5` را بررسی کند و هیچ mutation خودکاری را دوباره نفرستد.
 
@@ -110,11 +110,8 @@ SQLite تراکنش `IMMEDIATE` را گزینه‌ای برای گرفتن قف�
 ### اعتبارسنجی رسمی سازگاری نسخه‌ها (2026-11-16)
 
 - Node.js 26 در اکتبر 2026 وارد LTS شده است؛ `26.13.1` در 11 نوامبر 2026 به‌عنوان LTS security release منتشر شده و baseline فعلی این طرح است. Node 26 LTS انتخاب تأییدشده است؛ T001 patch جاری را دوباره کنترل و pin می‌کند. Node 24 و 22 نیز در صفحهٔ رسمی Releases LTS هستند.
-- Vite 8 نیازمند Node 20.19+ یا 22.12+ است؛ پس Node 26 نسخهٔ اعلام‌شده را برآورده می‌کند. راهنمای رسمی Vite قالب `react-ts` را ارائه می‌کند.
-- Vitest راهنمای جاری حداقل Vite 6.4 و Node 22.12 را می‌خواهد؛ با Node 26 و Vite 8 سازگار از نظر حداقل‌های اعلامی است.
 - مستندات مهاجرت Express 5 حداقل Node 18 را اعلام می‌کند؛ Node 26 این حداقل را پوشش می‌دهد.
-- Playwright مستندات رسمی آن را برای Windows و TypeScript معرفی می‌کند؛ در صفحهٔ نصب بازشده حداقل Node دقیق ثبت نشده بود، بنابراین حداقل نسخهٔ Playwright در این بررسی تأیید نشده و باید قبل از pin مجدداً وارسی شود.
-- این بررسی سازگاری اعلام‌شدهٔ حداقل‌ها را تأیید می‌کند، نه نصب، build موفق، یا سازگاری کامل نسخه‌های دقیق React/Express/SQLite. نسخه‌های دقیق و native SQLite روی Windows باید قبل از پیاده‌سازی با منابع رسمی همان نسخه و lockfile بازبینی شوند.
+- این بررسی سازگاری اعلام‌شدهٔ حداقل‌ها را تأیید می‌کند، نه نصب، build موفق یا سازگاری native SQLite روی Windows. T001 باید نسخه‌های دقیق و نصب واقعی را با lockfile بررسی کند.
 
 ## 5. کنترل نسخه و فرمان‌های تکراری
 
@@ -144,7 +141,7 @@ SQLite تراکنش `IMMEDIATE` را گزینه‌ای برای گرفتن قف�
 - آزمون race: دو تغییر روی یک Version؛ لغو نقش قبل/بعد از commit؛ اطمینان از حداکثر یک تغییر و حفظ داده پس از rollback.
 - Assignment AC-001 تا AC-006 و Spec AC-001 تا AC-036 باید به آزمون‌های مشخص ردیابی شوند. برای شکست‌های امنیتی، علاوه بر پاسخ HTTP، دادهٔ پایگاه داده خوانده و مقایسه شود.
 - آزمون و پذیرش نسخهٔ جاری Backend-only است؛ آزمون مستقیم HTTP و دادهٔ ماندگار لازم است.
-- Build/Test/Validation فقط پس از اجرای واقعی گزارش شوند. این مرحله هیچ آزمونی اجرا نکرده است.
+- Build/Test/Validation فقط پس از اجرای واقعی گزارش شوند. T001 probe compatibility را اجرا کرد؛ هیچ Build/Test محصولی اجرا نشده است.
 
 ## منابع رسمی
 

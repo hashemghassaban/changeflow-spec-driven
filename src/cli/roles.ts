@@ -1,0 +1,3 @@
+import type {SqliteDatabase} from '../persistence/database.js';import {inImmediateTransaction} from '../persistence/transaction.js';
+export type Role='Requester'|'Reviewer';
+export function changeRole(db:SqliteDatabase,userId:string,role:Role,grant:boolean,now=Date.now()):void{inImmediateTransaction(db,()=>{if(grant)db.prepare('INSERT INTO CurrentRoleGrant(userId,role,grantedAt) VALUES (?,?,?) ON CONFLICT(userId,role) DO UPDATE SET grantedAt=excluded.grantedAt').run(userId,role,now);else db.prepare('DELETE FROM CurrentRoleGrant WHERE userId=? AND role=?').run(userId,role);});}

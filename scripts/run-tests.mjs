@@ -1,0 +1,3 @@
+import { readdirSync } from 'node:fs';import { join } from 'node:path';import { spawnSync } from 'node:child_process';
+const root=process.argv[2]??'dist/tests';function walk(dir){return readdirSync(dir,{withFileTypes:true}).flatMap(entry=>entry.isDirectory()?walk(join(dir,entry.name)):[join(dir,entry.name)]);}
+const files=walk(root).filter(file=>file.endsWith('.test.js'));if(files.length===0){console.error(`No compiled tests found under ${root}`);process.exit(1);}const result=spawnSync(process.execPath,['--test',...files],{stdio:'inherit'});process.exit(result.status??1);

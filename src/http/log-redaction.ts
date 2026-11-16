@@ -1,0 +1,3 @@
+const sensitiveKeys=/^(authorization|cookie|set-cookie|x-csrf-token|password|session(id)?|csrf(token)?|token)$/i;
+export function redactSensitive(value:unknown):unknown{if(Array.isArray(value))return value.map(redactSensitive);if(value&&typeof value==='object'){const out:Record<string,unknown>={};for(const [key,item] of Object.entries(value))out[key]=sensitiveKeys.test(key)?'[REDACTED]':redactSensitive(item);return out;}return value;}
+export function safeLogRecord(method:string,path:string,status:number,body:unknown){return redactSensitive({method,path,status,body});}

@@ -1,19 +1,19 @@
 # راهنمای اجرای محلی و اعتبارسنجی (برای Implement آینده)
 
-این راهنما برای Implement آینده است؛ در مرحلهٔ Tasks هیچ runtime یا dependency نصب و هیچ فرمان Build/Test اجرا نمی‌شود. انتخاب baseline Node 26.13.x و driver `better-sqlite3@13.1.1` است؛ نصب واقعی روی Windows/Node محیط هدف gate اولیهٔ T001 است و تا موفقیت آن Task وابسته‌ای نباید شروع شود.
+این راهنما برای Implement آینده است؛ در T001 نصب clean و probe سازگاری محلی انجام شده‌اند؛ هیچ Build/Test محصولی اجرا نشده است. انتخاب baseline Node 26.13.x و driver `better-sqlite3@13.1.1` است؛ T001 روی Windows 11 Enterprise x64/Node 26.13.1 پاس شده است؛ شواهد و محدودیت محیط در `docs/dependency-compatibility.md` ثبت‌اند.
 
 ## پیش‌نیازهای پیشنهادی
 
 - Windows و PowerShell.
-- Node.js `26.13.1` و npm محلی `12.2.2`؛ مسیر و hash ابزار باید در T001 ثبت شوند.
-- وابستگی‌های exact pin شده و lockfile؛ clean install با npm `12.2.2` پس از تعیین `allowScripts` امن و عبور T001.
-- npm محلی `12.2.2` برای اجرای clean install مطابق سیاست lifecycle اسکریپت‌های npm 12.
+- Node.js `26.13.1` و npm محلی `12.2.2`؛ Node از مسیر `.node-version` و npm از `.tools/npm-12.2.2` اجرا می‌شود.
+- وابستگی‌های exact pin شده و lockfile؛ clean install با npm `12.2.2` و lockfile؛ lifecycleهای تأییدنشده مسدود می‌مانند و binding آمادهٔ better-sqlite3 استفاده می‌شود.
+
 
 ## فرمان‌های پیشنهادی پس از ساخت سورس
 
 ```powershell
-npm ci
-npm run dev
+& ".\.tools\npm-12.2.2\npm.cmd" ci
+& ".\.tools\npm-12.2.2\npm.cmd" run dev
 ```
 
 برای اجرای محلی API، ابتدا CLI محلی account-create و role-grant اجرا شود؛ ابزار، گذرواژه را محرمانه دریافت و RoleGrant را در SQLite تنظیم می‌کند. هویت و نقش از درخواست client پذیرفته نمی‌شوند.
@@ -22,12 +22,12 @@ CLI پیشنهادی به فایل DB از راه Windows ACL محدود است 
 
 تنظیمات امنیتی مصوب: scrypt `N=2^17,r=8,p=1,keylen=64,maxmem=256 MiB` با salt امن ۱۶ بایتی؛ session idle ۳۰ دقیقه / مطلق ۱۲ ساعت؛ cookie HttpOnly + SameSite=Lax و Secure در HTTPS؛ CSRF token ۳۲ بایتی در header و exact Origin check. این موارد انتخاب طراحی‌اند، اما شواهد اجرای واقعی فقط پس از اجرای آزمون ثبت می‌شوند.
 
-SQLite driver طراحی `better-sqlite3@13.1.1` و timeout برابر ۵۰۰۰ ms است. پیش از ادامهٔ کار وابسته، T001 باید روی Windows و Node دقیق lockfile clean install، native binding open/close، schema migration، transaction/rollback و contention/SQLITE_BUSY را بررسی کند. مستند CI upstream یا `engines.node` به‌تنهایی اثبات این نصب نیست.
+SQLite driver طراحی `better-sqlite3@13.1.1` و timeout برابر ۵۰۰۰ ms است. پیش از ادامهٔ کار وابسته، T001 روی محیط ثبت‌شده clean install، native binding open/close، commit/rollback و contention/SQLITE_BUSY را گذرانده است؛ migration محصول در Taskهای بعدی آزموده می‌شود. مستند CI upstream یا `engines.node` به‌تنهایی اثبات این نصب نیست.
 
 در نشست PowerShell جداگانه، فرمان آزمون پیشنهادی:
 
 ```powershell
-npm test
+& ".\.tools\npm-12.2.2\npm.cmd" test
 ```
 
 فرمان‌ها نمونه‌اند و تا شکل‌گیری `package.json` نهایی/Taskها نباید به‌عنوان runnable تلقی شوند.
@@ -52,7 +52,7 @@ npm test
 18. T001 compatibility evidence برای exact Node/SQLite package/Windows architecture؛ اگر نصب یا native binding fails، بقیهٔ کار متوقف و driver بازبینی شود.
 19. محدودسازی login: سقف‌های ۶۰ تلاش/IP و ۱۰ تلاش/(login/IP) در ۱۵ دقیقه، پاسخ 429/Retry-After، عدم تمدید پنجره با درخواست ردشده، بازیابی با گذشت زمان، پاک‌سازی ۲۴ساعته و ماندگاری SQLite بررسی شوند؛ login ناموجود و گذرواژهٔ نادرست پاسخ عمومی یکسان و مسیر scrypt مشابه داشته باشند، بدون ادعای زمان پاسخ یکسان.
 20. برای رقابت نسخه، دو process با دو connection به یک DB موقت پشت IPC barrier بیرون transaction هم‌زمان آزاد شوند؛ برای لغو نقش ترتیب revoke-first و mutation-first جداگانه اجرا شود. deadlineهای harness: startup هر process حداکثر ۱۵ ثانیه، هر انتظار IPC/barrier حداکثر ۱۰ ثانیه، هر عملیات HTTP آزمون حداکثر ۱۵ ثانیه و هر سناریو با cleanup حداکثر ۶۰ ثانیه. timeout باید خطای تشخیصی باشد، نه موفقیت/skip. در `finally` connectionها بسته، فرزندان با انتظار حداکثر ۵ ثانیه برای خاتمهٔ graceful و سپس terminate اجباری با انتظار حداکثر ۵ ثانیه پاک‌سازی، و DB موقت پس از آزادشدن منابع حذف شود؛ انتظار نامحدود و sleep تصادفی ممنوع است. این deadlineها timeoutهای harness هستند و `busy_timeout=5000` یا قرارداد HTTP را تغییر نمی‌دهند. نتیجهٔ هر عملیات و snapshot نهایی DB بررسی شود؛ در contention HTTP پاسخ 503/Retry-After: 5، rollback و بسته‌بودن transaction سنجیده و هیچ mutation replay نشود.
-21. برای UI، Draft ذخیره‌شده را از فرم دارای تغییرات ذخیره‌نشده جدا بررسی کنید؛ تازه‌سازی داده درون برنامه بدون reload کامل صفحه و پاسخ conflict نباید ورودی فرم را با دادهٔ دریافتی بی‌هشدار بازنویسی کند؛ دورریختن/جایگزینی نیازمند انتخاب صریح کاربر است. حفظ یا بازیابی پس از reload کامل مرورگر، بستن تب یا crash و هشدار خروج مرورگر جزو تعهد نیست؛ localStorage یا رفتار offline در این نسخه آزموده/الزام نشده است.
+
 22. logهای login، logout، session، و درخواست‌های CSRF را بررسی کنید تا password، Cookie/session ID، CSRF token یا header حامل آن‌ها ثبت نشوند.
 
 برای سناریوهای حساس، پاسخ HTTP و snapshot دادهٔ ذخیره‌شده (محتوا، status، version و توضیح آخر) هر دو بررسی شوند. خروجی Build/Test/Validation فقط پس از اجرای واقعی ثبت شود.
@@ -61,4 +61,4 @@ npm test
 
 - توسعهٔ محلی: API روی localhost؛ `Secure=false` فقط برای HTTP localhost؛ `HttpOnly` و `SameSite=Lax` همچنان فعال؛ حساب‌ها و RoleGrant فقط با CLI محلی و ACL فایل محدود.
 - استقرار واقعی: HTTPS/TLS، cookie `Secure`، راز نشست بیرون از مخزن، CSRF token و بررسی Origin، proxy مورداعتماد دقیق، ACL محدود فایل DB و backup. استقرار چندنمونه‌ای با SQLite تک‌فایل پوشش داده نشده و نیازمند بازبینی معماری است.
-- هیچ‌یک از دستورها هنوز اجرا نشده‌اند و این مستند، موفقیت build/test یا پذیرش انسانی را گزارش نمی‌کند.
+- Build/Test محصول و پذیرش انسانی هنوز اجرا نشده‌اند؛ T001 فقط probe سازگاری ابزار را گزارش می‌کند.

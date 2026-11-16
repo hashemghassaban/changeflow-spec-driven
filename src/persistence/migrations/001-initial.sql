@@ -1,0 +1,9 @@
+CREATE TABLE IndividualAccount (userId TEXT PRIMARY KEY, loginName TEXT NOT NULL UNIQUE, passwordHash BLOB NOT NULL, passwordSalt BLOB NOT NULL CHECK(length(passwordSalt)=16), scryptN INTEGER NOT NULL, scryptR INTEGER NOT NULL, scryptP INTEGER NOT NULL, keyLength INTEGER NOT NULL, createdAt INTEGER NOT NULL) STRICT;
+CREATE TABLE ServerSession (sessionIdHash BLOB PRIMARY KEY CHECK(length(sessionIdHash)=32), userId TEXT NOT NULL REFERENCES IndividualAccount(userId) ON DELETE CASCADE, csrfToken BLOB NOT NULL CHECK(length(csrfToken)=32), createdAt INTEGER NOT NULL, lastSeenAt INTEGER NOT NULL, absoluteExpiresAt INTEGER NOT NULL) STRICT;
+CREATE INDEX ServerSession_userId_idx ON ServerSession(userId);
+CREATE TABLE CurrentRoleGrant (userId TEXT NOT NULL REFERENCES IndividualAccount(userId) ON DELETE CASCADE, role TEXT NOT NULL CHECK(role IN ('Requester','Reviewer')), grantedAt INTEGER NOT NULL, PRIMARY KEY(userId,role)) STRICT;
+CREATE TABLE ChangeRequest (id TEXT PRIMARY KEY, title TEXT NOT NULL, description TEXT NOT NULL, reason TEXT NOT NULL, requesterId TEXT NOT NULL REFERENCES IndividualAccount(userId) ON DELETE RESTRICT, status TEXT NOT NULL CHECK(status IN ('Draft','PendingReview','Approved','ChangesRequested')), version INTEGER NOT NULL CHECK(version>0), latestReviewerExplanation TEXT, createdAt INTEGER NOT NULL, updatedAt INTEGER NOT NULL) STRICT;
+CREATE INDEX ChangeRequest_requester_status_idx ON ChangeRequest(requesterId,status);
+CREATE INDEX ChangeRequest_status_idx ON ChangeRequest(status);
+CREATE TABLE LoginAttempt (attemptId INTEGER PRIMARY KEY AUTOINCREMENT, scope TEXT NOT NULL CHECK(scope IN ('ip','login-ip')), bucketKey BLOB NOT NULL CHECK(length(bucketKey)=32), attemptedAt INTEGER NOT NULL) STRICT;
+CREATE INDEX LoginAttempt_window_idx ON LoginAttempt(scope,bucketKey,attemptedAt);

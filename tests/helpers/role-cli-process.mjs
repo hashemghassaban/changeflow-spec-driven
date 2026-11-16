@@ -1,0 +1,1 @@
+import {openDatabase} from '../../dist/src/persistence/database.js';import {changeRole} from '../../dist/src/cli/roles.js';const [file,userId,action]=process.argv.slice(2);const db=openDatabase(file);try{changeRole(db,userId,'Reviewer',action==='grant');process.send({type:'role-committed',action,userId});}finally{db.close();}process.disconnect();

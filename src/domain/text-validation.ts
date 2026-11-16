@@ -1,0 +1,6 @@
+import {ChangeRequestError} from './errors.js';
+export type TextField='title'|'description'|'reason'|'reviewerExplanation';
+const limits:Record<TextField,number>={title:120,description:5000,reason:1000,reviewerExplanation:1000};
+export function graphemeLength(value:string,locale='fa'):number{return [...new Intl.Segmenter(locale,{granularity:'grapheme'}).segment(value)].length;}
+export function validateText(field:TextField,value:unknown):string{if(typeof value!=='string')throw new ChangeRequestError('VALIDATION_FAILED',field+' must be a string');const normalized=value.trim();if(!normalized)throw new ChangeRequestError('VALIDATION_FAILED',field+' is required');if(graphemeLength(normalized)>limits[field])throw new ChangeRequestError('VALIDATION_FAILED',field+' exceeds '+limits[field]+' grapheme clusters');return normalized;}
+export function validateChangeContent(input:Record<string,unknown>){return {title:validateText('title',input.title),description:validateText('description',input.description),reason:validateText('reason',input.reason)};}

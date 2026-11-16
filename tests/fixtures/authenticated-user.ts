@@ -1,0 +1,2 @@
+export interface TestIdentityFixture { readonly userId:string; readonly loginName:string; readonly roles:readonly ('Requester'|'Reviewer')[] }
+export function authenticatedUser(userId:string,roles:readonly ('Requester'|'Reviewer')[]=['Requester']):TestIdentityFixture{return {userId,loginName:`fixture-${userId}`,roles};}
