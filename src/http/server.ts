@@ -1,0 +1,2 @@
+import {loadConfig} from '../../config/environment.js';import {openDatabase} from '../persistence/database.js';import {createApp} from './app.js';
+const config=loadConfig();const db=openDatabase(config.databasePath);const app=createApp(db,config,(record)=>{process.stdout.write(`${JSON.stringify(record)}\n`);});const server=app.listen(config.port,config.host,()=>process.stdout.write(`ChangeFlow API listening on ${config.host}:${config.port}\n`));const shutdown=()=>server.close(()=>{db.close();process.exit(0);});process.on('SIGINT',shutdown);process.on('SIGTERM',shutdown);

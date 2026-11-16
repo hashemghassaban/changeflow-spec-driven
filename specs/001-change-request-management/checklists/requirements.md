@@ -31,5 +31,5 @@
 ## یادداشت‌ها (Notes)
 
 - تصمیم محصولی جاری، نسخهٔ اول را Backend-only می‌کند. FR-027 تا FR-032، AC-037 تا AC-046 و SC-017 تا SC-020 که قبلاً برای UI ثبت شده بودند، در Spec به‌عنوان شناسه‌های بازنشسته قابل ردیابی‌اند و پذیرش نسخهٔ جاری نیستند.
-- انتخاب‌های فنی اصلی شامل احراز هویت محلی، scrypt، نشست SQLite، RoleGrant/CLI، CSRF، شمارش grapheme، محدودسازی login و driver پیشنهادی در Plan/Research ثبت شده‌اند؛ pin نسخه‌های دقیق و اجرای gate سازگاری Windows/Node به T001 واگذار شده است. آزمون‌های race با deadline و cleanup محدود، تنظیمات هر connection، login throttling و فرم دارای تغییرات ذخیره‌نشده در Tasks دارای خروجی مشخص‌اند.
-- بازبینی این checklist صرفاً سندی است؛ Build، Test یا پذیرش انسانی اجرا/ادعا نشده‌اند.
+- انتخاب‌های فنی شامل احراز هویت محلی، scrypt، نشست SQLite، RoleGrant/CLI، CSRF، شمارش grapheme، محدودسازی login و driver در Plan/Research ثبت شده‌اند؛ T001 gate سازگاری محیط ثبت‌شده را گذرانده است. آزمون‌های race، لغو نقش، busy، تنظیمات connection و login throttling جزو آزمون‌های Backend هستند.
+- این checklist نیازمندی‌ها را بازبینی می‌کند. نتایج واقعی Build/typecheck/Test جداگانه در `docs/validation-report.md` آمده‌اند؛ پذیرش انسانی ادعا نشده است.

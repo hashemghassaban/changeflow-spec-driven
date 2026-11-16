@@ -50,7 +50,7 @@ SQLite محلی برای نسخهٔ اول تک‌سرویسی و Windows، مش
 
 ## 3.5 نصب امن npm
 
-برای Windows x64 و Node 26.13.1، npm 12.2.2 به‌عنوان نسخهٔ دقیق ابزار محلی انتخاب شده است. npm 12 به‌طور پیش‌فرض اسکریپت نصب وابستگی‌هایی را که در `allowScripts` تأیید نشده‌اند مسدود می‌کند؛ خروجی نصب تشخیصی برای `better-sqlite3@13.1.1` این سیاست را نشان داد و API عمومی بسته binding داخل tarball (`prebuilds/win32-x64.node`) را بارگذاری کرد. این مسیر از binary آمادهٔ خود بسته استفاده می‌کند و `node-gyp`/ابزار C++ را لازم ندارد. این شواهد فقط همان install/smoke را ثابت می‌کند؛ T001 clean install، load و عملیات کامل DB را دوباره در محیط پروژه می‌آزماید. برای وابستگی جدید، lifecycleها باید پیش از allow کردن بررسی شوند؛ اسکریپت‌های غیرضروری مجاز نشوند و `--ignore-scripts`/`--force` راهکار نیستند. منابع: [npm CLI 12.0.0 policy](https://github.com/npm/cli/blob/latest/CHANGELOG.md), [npm issue #9837](https://github.com/npm/cli/issues/9837), [better-sqlite3 issue #1516](https://github.com/WiseLibs/better-sqlite3/issues/1516).
+برای Windows x64 و Node 26.13.1، npm 12.2.2 به‌عنوان نسخهٔ دقیق ابزار محلی انتخاب شده است. npm 12 به‌طور پیش‌فرض اسکریپت نصب وابستگی‌هایی را که در `allowScripts` تأیید نشده‌اند مسدود می‌کند؛ در نصب clean ثبت‌شده، این رفتار اجازه داد binding داخل tarball (`prebuilds/win32-x64.node`) از API عمومی استفاده شود، بدون اجرای `node-gyp` یا نیاز به C++ Build Tools. clean install، عملیات کامل DB و contention در T001 روی محیط ثبت‌شده پاس شدند؛ این شواهد فقط همان نسخه/محیط را پوشش می‌دهد. برای وابستگی جدید، lifecycleها باید پیش از allow کردن بررسی شوند؛ اسکریپت‌های غیرضروری مجاز نشوند و `--ignore-scripts`/`--force` راهکار نیستند. منابع: [npm CLI 12.0.0 policy](https://github.com/npm/cli/blob/latest/CHANGELOG.md), [npm issue #9837](https://github.com/npm/cli/issues/9837), [better-sqlite3 issue #1516](https://github.com/WiseLibs/better-sqlite3/issues/1516).
 
 ## 4. هویت، مجوز و لغو نقش
 
@@ -109,9 +109,9 @@ SQLite تراکنش `IMMEDIATE` را گزینه‌ای برای گرفتن قف�
 
 ### اعتبارسنجی رسمی سازگاری نسخه‌ها (2026-11-16)
 
-- Node.js 26 در اکتبر 2026 وارد LTS شده است؛ `26.13.1` در 11 نوامبر 2026 به‌عنوان LTS security release منتشر شده و baseline فعلی این طرح است. Node 26 LTS انتخاب تأییدشده است؛ T001 patch جاری را دوباره کنترل و pin می‌کند. Node 24 و 22 نیز در صفحهٔ رسمی Releases LTS هستند.
+- Node.js 26 در اکتبر 2026 وارد LTS شده است؛ `26.13.1` در 11 نوامبر 2026 به‌عنوان LTS security release منتشر شده و baseline این طرح است. Node 26 LTS انتخاب تأییدشده و نسخهٔ دقیق T001 است. Node 24 و 22 نیز در صفحهٔ رسمی Releases LTS هستند.
 - مستندات مهاجرت Express 5 حداقل Node 18 را اعلام می‌کند؛ Node 26 این حداقل را پوشش می‌دهد.
-- این بررسی سازگاری اعلام‌شدهٔ حداقل‌ها را تأیید می‌کند، نه نصب، build موفق یا سازگاری native SQLite روی Windows. T001 باید نسخه‌های دقیق و نصب واقعی را با lockfile بررسی کند.
+- T001 در محیط محلی ثبت‌شده، clean install و probe native SQLite را با نسخه‌های pin‌شده اجرا کرد؛ جزئیات در `docs/dependency-compatibility.md` است. این نتیجه، سازگاری عمومی سایر محیط‌ها را تضمین نمی‌کند.
 
 ## 5. کنترل نسخه و فرمان‌های تکراری
 
@@ -131,7 +131,7 @@ SQLite تراکنش `IMMEDIATE` را گزینه‌ای برای گرفتن قف�
 
 **انتخاب تأییدشده:** شمارش Unicode grapheme cluster در Backend با `Intl.Segmenter('fa', { granularity: 'grapheme' })`; trim قبل از count؛ نه byte و نه UTF-16 code unit. Node patch در lock/config pin و helper Backend با فارسی/اعراب ترکیبی/emoji/ZWJ آزمون می‌شود. [ECMA-402 Segmenter Objects](https://tc39.es/ecma402/#segmenter-objects)
 
-اگر Node target از Segmenter منتخب پشتیبانی نکند، T001 compatibility gate مانع Implement می‌ماند.
+Node `26.13.1` و شمارش grapheme با `Intl.Segmenter` در T001 بررسی و در آزمون‌های Backend اجرا شدند؛ سایر runtimeها نیازمند اعتبارسنجی مستقل‌اند.
 
 ## 7. آزمون و شواهد
 
@@ -139,9 +139,9 @@ SQLite تراکنش `IMMEDIATE` را گزینه‌ای برای گرفتن قف�
 - آزمون یکپارچه با DB واقعی موقت: عملیات موفق/ردشده، مقدار ذخیره‌شده، version و atomicity توضیح + `ChangesRequested`.
 - آزمون HTTP: احراز subject، role scope در فهرست/جزئیات، نگاشت conflict و عدم افشای جزئیات.
 - آزمون race: دو تغییر روی یک Version؛ لغو نقش قبل/بعد از commit؛ اطمینان از حداکثر یک تغییر و حفظ داده پس از rollback.
-- Assignment AC-001 تا AC-006 و Spec AC-001 تا AC-036 باید به آزمون‌های مشخص ردیابی شوند. برای شکست‌های امنیتی، علاوه بر پاسخ HTTP، دادهٔ پایگاه داده خوانده و مقایسه شود.
+- Assignment AC-001 تا AC-006 و Spec AC-001 تا AC-036 به آزمون‌های Backend ردیابی شده‌اند. برای شکست‌های امنیتی، علاوه بر پاسخ HTTP، دادهٔ پایگاه داده خوانده و مقایسه می‌شود.
 - آزمون و پذیرش نسخهٔ جاری Backend-only است؛ آزمون مستقیم HTTP و دادهٔ ماندگار لازم است.
-- Build/Test/Validation فقط پس از اجرای واقعی گزارش شوند. T001 probe compatibility را اجرا کرد؛ هیچ Build/Test محصولی اجرا نشده است.
+- Build، typecheck و suite آزمون محصول در Windows/PowerShell واقعاً اجرا شدند؛ فرمان‌ها و نتایج در `docs/validation-report.md` ثبت شده‌اند. این نتایج پذیرش انسانی نیستند.
 
 ## منابع رسمی
 

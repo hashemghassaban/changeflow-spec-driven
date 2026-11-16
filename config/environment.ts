@@ -1,4 +1,5 @@
 import path from 'node:path';
+import fs from 'node:fs';
 
 export interface AppConfig {
   readonly host: string;
@@ -28,7 +29,7 @@ export function loadConfig(env = process.env): AppConfig {
   } else {
     const keyPath = env.LOGIN_HMAC_KEY_FILE?.trim();
     if (!keyPath) throw new Error('LOGIN_HMAC_KEY_FILE is required; refusing insecure defaults');
-    key = require('node:fs').readFileSync(path.resolve(keyPath));
+    key = fs.readFileSync(path.resolve(keyPath));
     if (key.byteLength !== 32) throw new Error('Login HMAC key file must contain exactly 32 bytes');
   }
   const origins = (env.ALLOWED_ORIGINS ?? 'http://localhost:3000').split(',').map((x) => x.trim()).filter(Boolean);
